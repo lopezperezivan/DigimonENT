@@ -1,55 +1,93 @@
 package digi;
 
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class BatallaDigital {
     private Domador domador;
+    private List<Digimon> digimonsDisponibles;
+    private Random rand = new Random();
+    private Scanner scanner = new Scanner(System.in);
 
-    public BatallaDigital(Domador domador) {
+    public BatallaDigital(Domador domador, List<Digimon> digimonsDisponibles) {
         this.domador = domador;
+        this.digimonsDisponibles = digimonsDisponibles;
     }
 
     public void elige() {
-        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            Digimon digimonJugador = seleccionarDigimonJugador();
+            Digimon digimonRival = seleccionarDigimonRival();
 
-        System.out.print("Elige el nombre del primer Digimon: ");
-        Digimon digimon1 = new Digimon(scanner.nextLine());
-        domador.addDigimon(digimon1);
-        
-        System.out.print("Elige el nombre del segundo Digimon: ");
-        Digimon digimon2 = new Digimon(scanner.nextLine());
-        domador.addDigimon(digimon2);
+            System.out.println("¡Comienza la batalla entre " + digimonJugador.getNombre() + " y " + digimonRival.getNombre() + "!");
 
-        System.out.println("¡Comienza la batalla entre " + digimon1.getNombre() + " y " + digimon2.getNombre() + "!");
+            while (digimonJugador.getSalud() > 0 && digimonRival.getSalud() > 0) {
+                System.out.println(digimonJugador);
+                System.out.println(digimonRival);
 
-        while (digimon1.getSalud() > 0 && digimon2.getSalud() > 0) {
-            System.out.println(digimon1);
-            System.out.println(digimon2);
+                System.out.print("Elige el ataque para " + digimonJugador.getNombre() + " (1 o 2): ");
+                int ataqueJugador = scanner.nextInt();
+                if (ataqueJugador == 1) {
+                    digimonJugador.ataque1(digimonRival);
+                } else if (ataqueJugador == 2) {
+                    digimonJugador.ataque2(digimonRival);
+                }
 
-            System.out.print("Elige el ataque para " + digimon1.getNombre() + " (1 o 2): ");
-            int ataque1 = scanner.nextInt();
-            if (ataque1 == 1) {
-                digimon1.ataque1(digimon2);
-            } else if (ataque1 == 2) {
-                digimon1.ataque2(digimon2);
+                if (digimonRival.getSalud() <= 0) {
+                    System.out.println(digimonRival.getNombre() + " ha sido derrotado!");
+                    domador.addDigimon(digimonRival);
+                    digimonsDisponibles.remove(digimonRival);
+                    break;
+                }
+
+                int ataqueRival = rand.nextInt(2) + 1;
+                if (ataqueRival == 1) {
+                    digimonRival.ataque1(digimonJugador);
+                } else if (ataqueRival == 2) {
+                    digimonRival.ataque2(digimonJugador);
+                }
+
+                if (digimonJugador.getSalud() <= 0) {
+                    System.out.println(digimonJugador.getNombre() + " ha sido derrotado!");
+                    System.out.println("Has perdido. Empieza de nuevo.");
+                    return;
+                }
             }
 
-            if (digimon2.getSalud() <= 0) {
-                System.out.println(digimon2.getNombre() + " ha sido derrotado!");
+            if (domadorTieneDigimonsRequeridos()) {
+                System.out.println("¡Felicidades! Has conseguido a Agumon, Patamon y Gabumon. ¡Has ganado el juego!");
                 break;
             }
-
-            System.out.print("Elige el ataque para " + digimon2.getNombre() + " (1 o 2): ");
-            int ataque2 = scanner.nextInt();
-            if (ataque2 == 1) {
-                digimon2.ataque1(digimon1);
-            } else if (ataque2 == 2) {
-                digimon2.ataque2(digimon1);
-            }
-
-            if (digimon1.getSalud() <= 0) {
-                System.out.println(digimon1.getNombre() + " ha sido derrotado!");
-            }
         }
+    }
+
+    private Digimon seleccionarDigimonJugador() {
+        System.out.println("Elige tu Digimon:");
+        List<Digimon> digimons = domador.getDigimons();
+        for (int i = 0; i < digimons.size(); i++) {
+            System.out.println((i + 1) + ". " + digimons.get(i).getNombre());
+        }
+        int eleccion = scanner.nextInt();
+        return digimons.get(eleccion - 1);
+    }
+
+    private Digimon seleccionarDigimonRival() {
+        int index = rand.nextInt(digimonsDisponibles.size());
+        return digimonsDisponibles.get(index);
+    }
+
+    private boolean domadorTieneDigimonsRequeridos() {
+        boolean tieneAgumon = false;
+        boolean tienePatamon = false;
+        boolean tieneGabumon = false;
+
+        for (Digimon digimon : domador.getDigimons()) {
+            if (digimon.getNombre().equals("Agumon")) tieneAgumon = true;
+            if (digimon.getNombre().equals("Patamon")) tienePatamon = true;
+            if (digimon.getNombre().equals("Gabumon")) tieneGabumon = true;
+        }
+
+        return tieneAgumon && tienePatamon && tieneGabumon;
     }
 }
