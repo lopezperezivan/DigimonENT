@@ -23,4 +23,18 @@ public class Domador {
     public List<Digimon> getDigimons() {
         return digimons;
     }
+
+    public boolean tieneDigimonsRequeridos() {
+        boolean tieneAgumon = false;
+        boolean tienePatamon = false;
+        boolean tieneGabumon = false;
+
+        for (Digimon digimon : digimons) {
+            if (digimon.getNombre().equals("Agumon")) tieneAgumon = true;
+            if (digimon.getNombre().equals("Patamon")) tienePatamon = true;
+            if (digimon.getNombre().equals("Gabumon")) tieneGabumon = true;
+        }
+
+        return tieneAgumon && tienePatamon && tieneGabumon;
+    }
 }

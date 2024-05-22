@@ -37,18 +37,21 @@ public class Principal {
             int opcion = scanner.nextInt();
             if (opcion == 1) {
                 BatallaDigital batalla = new BatallaDigital(domador, digimonsDisponibles);
-                batalla.elige();
-                if (domador.getDigimons().size() == 1) { // Si solo queda el inicial, significa que perdió
+                boolean jugadorGana = batalla.elige();
+                if (jugadorGana) {
+                    System.out.println("¡Has ganado el juego! Gracias por jugar.");
+                    break;
+                } else if (domador.getDigimons().size() == 1) { // Si solo queda el inicial, significa que perdió
                     System.out.println("Has perdido el juego. Empieza de nuevo.");
                     break;
                 }
             } else if (opcion == 2) {
+                System.out.println("Gracias por jugar.");
                 break;
             } else {
                 System.out.println("Opción no válida.");
             }
         }
-        System.out.println("Gracias por jugar.");
         scanner.close();
     }
 }

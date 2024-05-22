@@ -15,51 +15,51 @@ public class BatallaDigital {
         this.digimonsDisponibles = digimonsDisponibles;
     }
 
-    public void elige() {
-        while (true) {
-            Digimon digimonJugador = seleccionarDigimonJugador();
-            Digimon digimonRival = seleccionarDigimonRival();
+    public boolean elige() {
+        Digimon digimonJugador = seleccionarDigimonJugador();
+        Digimon digimonRival = seleccionarDigimonRival();
 
-            System.out.println("¡Comienza la batalla entre " + digimonJugador.getNombre() + " y " + digimonRival.getNombre() + "!");
+        System.out.println("¡Comienza la batalla entre " + digimonJugador.getNombre() + " y " + digimonRival.getNombre() + "!");
 
-            while (digimonJugador.getSalud() > 0 && digimonRival.getSalud() > 0) {
-                System.out.println(digimonJugador);
-                System.out.println(digimonRival);
+        while (digimonJugador.getSalud() > 0 && digimonRival.getSalud() > 0) {
+            System.out.println(digimonJugador);
+            System.out.println(digimonRival);
 
-                System.out.print("Elige el ataque para " + digimonJugador.getNombre() + " (1 o 2): ");
-                int ataqueJugador = scanner.nextInt();
-                if (ataqueJugador == 1) {
-                    digimonJugador.ataque1(digimonRival);
-                } else if (ataqueJugador == 2) {
-                    digimonJugador.ataque2(digimonRival);
-                }
-
-                if (digimonRival.getSalud() <= 0) {
-                    System.out.println(digimonRival.getNombre() + " ha sido derrotado!");
-                    domador.addDigimon(digimonRival);
-                    digimonsDisponibles.remove(digimonRival);
-                    break;
-                }
-
-                int ataqueRival = rand.nextInt(2) + 1;
-                if (ataqueRival == 1) {
-                    digimonRival.ataque1(digimonJugador);
-                } else if (ataqueRival == 2) {
-                    digimonRival.ataque2(digimonJugador);
-                }
-
-                if (digimonJugador.getSalud() <= 0) {
-                    System.out.println(digimonJugador.getNombre() + " ha sido derrotado!");
-                    System.out.println("Has perdido. Empieza de nuevo.");
-                    return;
-                }
+            System.out.print("Elige el ataque para " + digimonJugador.getNombre() + " (1 o 2): ");
+            int ataqueJugador = scanner.nextInt();
+            if (ataqueJugador == 1) {
+                digimonJugador.ataque1(digimonRival);
+            } else if (ataqueJugador == 2) {
+                digimonJugador.ataque2(digimonRival);
             }
 
-            if (domadorTieneDigimonsRequeridos()) {
-                System.out.println("¡Felicidades! Has conseguido a Agumon, Patamon y Gabumon. ¡Has ganado el juego!");
+            if (digimonRival.getSalud() <= 0) {
+                System.out.println(digimonRival.getNombre() + " ha sido derrotado!");
+                domador.addDigimon(digimonRival);
+                digimonsDisponibles.remove(digimonRival);
                 break;
             }
+
+            int ataqueRival = rand.nextInt(2) + 1;
+            if (ataqueRival == 1) {
+                digimonRival.ataque1(digimonJugador);
+            } else if (ataqueRival == 2) {
+                digimonRival.ataque2(digimonJugador);
+            }
+
+            if (digimonJugador.getSalud() <= 0) {
+                System.out.println(digimonJugador.getNombre() + " ha sido derrotado!");
+                System.out.println("Has perdido. Empieza de nuevo.");
+                return false; // Retorna false si el jugador pierde
+            }
         }
+
+        if (domadorTieneDigimonsRequeridos()) {
+            System.out.println("¡Felicidades! Has conseguido a Agumon, Patamon y Gabumon. ¡Has ganado el juego!");
+            return true; // Retorna true si el jugador gana
+        }
+
+        return false; // Retorna false si la batalla termina sin ganar el juego
     }
 
     private Digimon seleccionarDigimonJugador() {
